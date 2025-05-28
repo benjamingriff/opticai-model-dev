@@ -119,13 +119,32 @@ estimator.fit({
 
 ## ✅ Adding a New Model
 
-1. Add your model class to `models/` (e.g., `models/my_model.py`)
-2. Add it to the model registry in `models/__init__.py`
-3. Reference it in your config:
+Add your model class to models/ (e.g., models/my_model.py):
 
-```yaml
+```python
+class MyModel(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+        ...
+```
+
+Register it in models/__init__.py:
+
+```python
+from models.my_model import MyModel
+MODEL_REGISTRY = {
+    ...
+    "my_model": MyModel
+}
+```
+
+Reference it in your config:
+
+```yml
 model: my_model
 ```
+
+Call it with `get_model(cfg["model"], **kwargs)` in your task module
 
 4. Update the corresponding training loop in `tasks/your_task/train.py` if needed
 
