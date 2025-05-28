@@ -146,8 +146,6 @@ model: my_model
 
 Call it with `get_model(cfg["model"], **kwargs)` in your task module
 
-4. Update the corresponding training loop in `tasks/your_task/train.py` if needed
-
 ---
 
 ## ✅ Adding a New Task
