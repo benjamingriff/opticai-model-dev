@@ -1,6 +1,6 @@
-# opticai-model-dev
+# Optic AI Model Development
 
-# Cataract-AI: Surgical Phase Classification and Analysis
+## Surgical Phase Classification and Analysis
 
 ## Overview
 
