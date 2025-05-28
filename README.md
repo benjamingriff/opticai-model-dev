@@ -2,8 +2,6 @@
 
 ## Surgical Phase Classification and Analysis
 
-## Overview
-
 This repository is a modular and extensible framework for training, evaluating, and deploying deep learning models for cataract surgery video analysis.
 
 It is designed to support:
