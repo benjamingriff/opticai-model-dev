@@ -145,7 +145,7 @@ python scripts/train_model.py --config configs/tool_detection.yaml
 
 ---
 
-## 📦 Future Improvements
+## ✅ Future Improvements
 
 * Add Docker container for training/inference
 * Add experiment tracking via W\&B or MLflow
@@ -154,7 +154,7 @@ python scripts/train_model.py --config configs/tool_detection.yaml
 
 ---
 
-## 👨‍⚕️ Datasets Used
+## 📦 Datasets Used
 
 * [Cataract-21 Dataset](https://ftp.itec.aau.at/datasets/ovid/cat-21/)
 * [Cataract-101 Dataset](https://ftp.itec.aau.at/datasets/ovid/cat-101/)
