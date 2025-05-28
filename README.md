@@ -1,6 +1,6 @@
 # Optic AI Model Development
 
-## Surgical Phase Classification and Analysis
+## 👁️ Surgical Phase Classification and Analysis
 
 This repository is a modular and extensible framework for training, evaluating, and deploying deep learning models for cataract surgery video analysis.
 
