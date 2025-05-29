@@ -179,7 +179,7 @@ python scripts/train_model.py --config configs/tool_detection.yaml
 
 ---
 
-## Environment
+## 🪣 Environment
 
 Steps to setup a environment using UV.
 
