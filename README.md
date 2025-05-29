@@ -178,3 +178,44 @@ python scripts/train_model.py --config configs/tool_detection.yaml
 * [CATARACTS Dataset](https://ieee-dataport.org/open-access/cataracts) (for external validation)
 
 ---
+
+## Environment
+
+Steps to setup a environment using UV.
+
+Instal UV
+```bash
+pip install --upgrade uv
+```
+
+Create a virtual environment using UV with a specific python version.
+```bash
+uv venv --python python3.12 .venv
+```
+
+Activate the environment.
+```bash
+source .venv/bin/activate
+```
+
+or on windows.
+
+```bash
+.venv\Scripts\activate
+```
+
+Start installing the packages you need for dev.
+```bash
+uv pip install jupyter
+```
+
+Once you are happy with your requirements.
+```bash
+uv pip freeze > requirements.txt
+```
+### Revisiting the project
+
+Install the lovingly prepared requirements.txt
+```bash
+uv pip install requirements.txt
+```
