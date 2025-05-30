@@ -77,7 +77,7 @@ Training logic is dispatched dynamically via `importlib`, making `scripts/train_
 
 ### ✅ Recommended configs/ Structure
 
-bash
+```text
 configs/
 ├── train/                     # All training jobs
 │   ├── phase_classification/
@@ -248,5 +248,5 @@ uv pip install requirements.txt
 Current dataset debug functionality
 
 ```bash
- python -m scripts.view_dataset --config configs/view_cateract21.yaml
+ python -m scripts.view_dataset --config configs/debug/view_cateract101_frames.yaml
  ```
