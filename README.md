@@ -75,6 +75,29 @@ data_path: /Users/you/data/cataract/
 
 Training logic is dispatched dynamically via `importlib`, making `scripts/train_model.py` universal.
 
+### ✅ Recommended configs/ Structure
+
+bash
+configs/
+├── train/                     # All training jobs
+│   ├── phase_classification/
+│   │   ├── cat21_cnn_lstm.yaml
+│   │   ├── cat21_r3d.yaml
+│   │   └── cat101_swin.yaml
+│   ├── phase_segmentation/
+│   │   └── cat101_mstcn.yaml
+│   └── tool_detection/
+│       └── cat101_yolov5.yaml
+├── infer/                     # Inference jobs
+│   └── cat101_swin_infer.yaml
+├── debug/                     # Dataset viewing/debugging
+│   ├── view_cat21.yaml
+│   └── view_cat101.yaml
+├── sweep/                     # Hyperparam tuning configs
+│   └── cat21_sweep.yaml
+└── base.yaml                  # Optional: shared defaults to inherit from
+```
+
 ---
 
 ## 🧰 Data Handling
@@ -109,7 +132,7 @@ estimator.fit({
 })
 ```
 
-### B. Running on **EC2 / Inferentia**
+### B. Running on **EC2 / Inferentia 2**
 
 * Use `scp` or `git clone` to deploy repo
 * Install deps and run `python scripts/train_model.py` as usual
@@ -219,3 +242,11 @@ Install the lovingly prepared requirements.txt
 ```bash
 uv pip install requirements.txt
 ```
+
+--- 
+
+Current dataset debug functionality
+
+```bash
+ python -m scripts.view_dataset --config configs/view_cateract21.yaml
+ ```
