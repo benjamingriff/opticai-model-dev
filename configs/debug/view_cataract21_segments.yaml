@@ -1,0 +1,4 @@
+task: debug_view
+dataset: cataract-21
+data_path: ${DATA_PATH}
+mode: segment

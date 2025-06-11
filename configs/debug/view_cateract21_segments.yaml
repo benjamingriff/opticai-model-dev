@@ -1,4 +1,0 @@
-task: debug_view
-dataset: cataract21
-data_path: ${DATA_PATH}/cat-21/training/
-mode: segment

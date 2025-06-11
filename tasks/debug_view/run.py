@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import random
 import torch
@@ -15,9 +16,10 @@ def run(cfg):
         [transforms.Resize((224, 224)), transforms.ToTensor()]
     )
 
-    DatasetClass = get_dataset(cfg["dataset"])
+    dataset_name = cfg["dataset"]
+    DatasetClass = get_dataset(dataset_name)
     dataset = DatasetClass(
-        data_root=cfg["data_path"],
+        data_root=os.path.join(cfg["data_path"], dataset_name),
         mode=cfg["mode"],
         transform=transform,
     )

@@ -1,9 +1,9 @@
-from datasets.cateract21 import Cataract21Dataset
-from datasets.cateract101 import Cataract101Dataset
+from datasets.cataract21 import Cataract21Dataset
+from datasets.cataract101 import Cataract101Dataset
 
 DATASET_REGISTRY = {
-    "cataract21": Cataract21Dataset,
-    "cataract101": Cataract101Dataset,
+    "cataract-21": Cataract21Dataset,
+    "cataract-101": Cataract101Dataset,
 }
 
 

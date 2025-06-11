@@ -1,0 +1,14 @@
+# configs/segment_classification.yaml
+task: segment_classification
+model: cnn_lstm
+
+datasets:
+  - cataract-21
+
+data_path: ${DATA_PATH}
+val_split: 0.2
+
+batch_size: 8
+num_epochs: 2 # 20
+
+device: mps
