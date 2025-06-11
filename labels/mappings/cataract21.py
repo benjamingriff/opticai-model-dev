@@ -1,18 +1,18 @@
 PHASE_MAP = {
-    "Antibiotikum": "Antibiotikum",
-    "Hydrodissektion": "Hydrodissektion",
+    "Antibiotikum": "Tonifying and antibiotics",
+    "Hydrodissektion": "Hydrodissection",
     "Incision": "Incision",
-    "Irrigation-Aspiration": "Irrigation-Aspiration",
-    "Kapselpolishing": "Kapselpolishing",
-    "Linsenimplantation": "Linsenimplantation",
-    "Phako": "Phako",
+    "Irrigation-Aspiration": "Irrigation and aspiration",
+    "Kapselpolishing": "Capsule polishing",
+    "Linsenimplantation": "Lens implant setting-up",
+    "Phako": "Phacoemulsification",
     "Rhexis": "Rhexis",
-    "Tonisieren": "Tonisieren",
-    "Visco-Absaugung": "Visco-Absaugung",
-    "Viscoelasticum": "Viscoelasticum",
+    "Tonisieren": "Tonifying and antibiotics",
+    "Visco-Absaugung": "Viscous agent removal",
+    "Viscoelasticum": "Viscous agent injection",
     "not_initialized": "Idle",
 }
 
 
-def normalize_phase(label):
+def normalise_phase(label):
     return PHASE_MAP.get(label)

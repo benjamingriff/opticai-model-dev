@@ -1,6 +1,6 @@
 # Cataract Surgery Phases
 
-This document provides a unified list of cataract surgery phases, along with their descriptions and common ways of phrasing these phases across datasets (`cat101` and `cat21`).
+This document provides a unified list of cataract surgery phases, along with their descriptions and common ways of phrasing these phases across datasets (`cataract-21` and `cataract-101`).
 
 ---
 
@@ -18,7 +18,7 @@ This document provides a unified list of cataract surgery phases, along with the
 | **Lens implant setting-up**  | Implanting the intraocular lens (IOL) into the capsule.                         | `Linsenimplantation`, `Lens implant setting-up`                                   |
 | **Viscous agent removal**    | Removing the viscous agent from the anterior chamber.                          | `Visco-Absaugung`, `Viscous agent removal`                                        |
 | **Tonifying and antibiotics**| Tonifying the eye and applying antibiotics to prevent infection.               | `Antibiotikum`, `Tonisieren`, `Tonifying and antibiotics`                         |
-| **Not-Initialized**          | Placeholder for uninitialized or invalid phases.                               | `not_initialized`, `Not-Initialized`                                              |
+| **Idle**                     | Placeholder for uninitialized phases, invalid phases, or phases where no work is happening. | `not_initialized`, `Idle`                                                        |
 
 ---
 
@@ -38,4 +38,4 @@ This document provides a unified list of cataract surgery phases, along with the
 
 ### Example Usage
 
-When normalizing labels from datasets, use the **Phase Title** as the target label and map the **Common Phrasing** terms to it using a phase map.
+When normalising labels from datasets, use the **Phase Title** as the target label and map the **Common Phrasing** terms to it using a phase map.

@@ -1,7 +1,7 @@
 import os
 import csv
 from datasets.base.frame_segment import BaseFrameSegmentDataset
-from labels.mappings.cataract21 import normalize_phase
+from labels.mappings.cataract21 import normalise_phase
 
 
 class Cataract21Dataset(BaseFrameSegmentDataset):
@@ -33,7 +33,7 @@ class Cataract21Dataset(BaseFrameSegmentDataset):
                         rows = list(reader)
                         for i, row in enumerate(rows):
                             label = row["label"]
-                            normalized_label = normalize_phase(label)
+                            normalized_label = normalise_phase(label)
                             frame = int(row["frame"])
                             if normalized_label != prev_label:
                                 if prev_label is not None:
