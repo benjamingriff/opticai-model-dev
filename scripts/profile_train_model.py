@@ -1,11 +1,12 @@
 import os
-import argparse
 import yaml
 from dotenv import load_dotenv
 from string import Template
 import importlib
 
 load_dotenv()
+
+CONFIG_PATH = "./configs/train/phase_classification/cataract_cnn_lstm.yaml"
 
 
 def load_config(path):
@@ -16,11 +17,7 @@ def load_config(path):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, required=True)
-    args = parser.parse_args()
-
-    cfg = load_config(args.config)
+    cfg = load_config(CONFIG_PATH)
 
     task = cfg["task"]
     module = importlib.import_module(f"tasks.train.{task}.train")

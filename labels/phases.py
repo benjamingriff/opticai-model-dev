@@ -13,4 +13,4 @@ PHASES = [
 ]
 
 phase2idx = {label: i for i, label in enumerate(PHASES)}
-idx2phases = {i: label for label, i in phase2idx.items()}
+idx2phase = {i: label for label, i in phase2idx.items()}

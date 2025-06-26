@@ -6,12 +6,12 @@ import torch
 from torchvision.transforms.functional import to_tensor
 
 
-class BaseFrameSegmentDataset(Dataset):
+class BaseFrameSegmentSequenceDataset(Dataset):
     def __init__(self, data_root, mode, transform):
         self.data_root = os.path.expanduser(data_root)
         self.mode = mode
         self.transform = transform
-        self.samples = None
+        self.samples = None  # This will contain different things depending on mode
 
     def get_labels(self):
         return sorted(set(sample[-1] for sample in self.samples))
@@ -63,6 +63,35 @@ class BaseFrameSegmentDataset(Dataset):
         video_tensor = torch.stack(frames)
         return video_tensor
 
+    def _load_sequence(self, video_path, frame_list, label_list):
+        cap = cv2.VideoCapture(video_path)
+        frames = []
+        labels = []
+        for frame_idx, label in zip(frame_list, label_list):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+            ret, frame = cap.read()
+            if not ret:
+                continue
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = Image.fromarray(frame)
+
+            if self.transform:
+                frame = self.transform(frame)
+
+            if not isinstance(frame, torch.Tensor):
+                frame = to_tensor(frame)
+
+            frames.append(frame)
+            labels.append(label)
+
+        cap.release()
+
+        if not frames:
+            raise RuntimeError(f"Failed to read full sequence from {video_path}")
+
+        video_tensor = torch.stack(frames)
+        return video_tensor, labels
+
     def __len__(self):
         return len(self.samples)
 
@@ -71,9 +100,19 @@ class BaseFrameSegmentDataset(Dataset):
             video_path, frame_idx, label = self.samples[idx]
             image = self._load_frame(video_path, frame_idx)
             return image, label
+
         elif self.mode == "segment":
             video_path, start_frame, end_frame, label = self.samples[idx]
             video_tensor = self._load_segment(video_path, start_frame, end_frame)
             return video_tensor, label
+
+        elif self.mode == "sequence":
+            # samples[idx] will contain (video_path, frame_list, label_list)
+            video_path, frame_list, label_list = self.samples[idx]
+            video_tensor, labels = self._load_sequence(
+                video_path, frame_list, label_list
+            )
+            return video_tensor, labels
+
         else:
             raise ValueError(f"Unsupported mode: {self.mode}")

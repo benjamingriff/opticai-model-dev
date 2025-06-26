@@ -1,11 +1,11 @@
 import os
 import csv
-from datasets.base.frame_segment import BaseFrameSegmentDataset
+from datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
 from labels.mappings.cataract21 import normalise_phase
 
 
-class Cataract21Dataset(BaseFrameSegmentDataset):
-    def __init__(self, data_root, mode="frame", transform=None):
+class Cataract21Dataset(BaseFrameSegmentSequenceDataset):
+    def __init__(self, data_root, mode, transform=None):
         super().__init__(data_root, mode=mode, transform=transform)
         self.samples = self._load_samples()
 
@@ -26,7 +26,12 @@ class Cataract21Dataset(BaseFrameSegmentDataset):
 
                 with open(csv_path, "r") as f:
                     reader = csv.DictReader(f, fieldnames=["frame", "label"])
-                    if self.mode == "segment":
+                    if self.mode == "frame":
+                        for row in reader:
+                            frame = int(row["frame"])
+                            label = row["label"]
+                            samples.append((video_path, frame, label))
+                    elif self.mode == "segment":
                         prev_label = None
                         start = None
                         current_frame = None
@@ -57,4 +62,17 @@ class Cataract21Dataset(BaseFrameSegmentDataset):
                                     prev_label,
                                 )
                             )
+
+                    elif self.mode == "sequence":
+                        frame_list = []
+                        label_list = []
+                        for row in reader:
+                            frame = int(row["frame"])
+                            label = normalise_phase(row["label"])
+                            frame_list.append(frame)
+                            label_list.append(label)
+                        samples.append((video_path, frame_list, label_list))
+
+                    else:
+                        raise ValueError(f"Unsupported mode: {self.mode}")
         return samples

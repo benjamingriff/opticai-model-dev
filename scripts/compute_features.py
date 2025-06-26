@@ -23,8 +23,8 @@ def main():
     cfg = load_config(args.config)
 
     task = cfg["task"]
-    module = importlib.import_module(f"tasks.train.{task}.train")
-    run_fn = getattr(module, "train")
+    module = importlib.import_module(f"tasks.compute.{task}.compute")
+    run_fn = getattr(module, "compute_features")
     run_fn(cfg)
 
 

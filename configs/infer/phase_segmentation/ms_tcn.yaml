@@ -1,0 +1,14 @@
+task: phase_segmentation
+
+model: ms_tcn
+
+checkpoint: outputs/phase_segmentation/models/best.pt
+
+tcn:
+  num_stages: 4
+  num_layers: 10
+  num_filters: 64
+
+downsample_stride: 4
+
+device: mps

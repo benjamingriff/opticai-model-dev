@@ -1,19 +1,25 @@
 import os
+import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import transforms
-from torch.utils.data import DataLoader, ConcatDataset
-from models.cnn_lstm import CNNLSTM
+from torch.utils.data import DataLoader, ConcatDataset, Subset
 from datasets import get_dataset
-from .utils.collate import segment_collate
+from models import get_model
+from .utils.collate import select_collate
 from .utils.split import split_dataset_by_video
+from .utils.filter import filter_dataset_by_labels
+from labels.phases import idx2phases
 from rich import print
 
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.utils.multiclass import unique_labels
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+
+from memory_profiler import profile
 
 
 def get_transform():
@@ -34,25 +40,37 @@ def load_datasets(cfg):
     return ConcatDataset(datasets)
 
 
+def get_labels_from_subset(subset):
+    ds = subset.dataset
+    indices = subset.indices
+    return sorted(set(ds.samples[i][3] for i in indices))
+
+
 def save_model(model, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     torch.save(model.state_dict(), path)
 
 
-def evaluate_model(model, val_loader, device, label_names, output_dir):
+def evaluate_model(model, val_loader, output_dir, cfg):
     model.eval()
     all_preds, all_labels = [], []
 
     with torch.no_grad():
-        for x, y, lengths in val_loader:
-            x, y = x.to(device), y.to(device)
+        for batch in val_loader:
+            if cfg["model"] == "cnn_lstm":
+                x, y, lengths = batch
+            else:
+                x, y = batch
+                lengths = None
+            x, y = x.to(cfg["device"]), y.to(cfg["device"])
             logits = model(x, lengths)
             preds = torch.argmax(logits, dim=1)
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(y.cpu().numpy())
 
-    # Compute and save confusion matrix
-    cm = confusion_matrix(all_labels, all_preds)
+    labels = unique_labels(all_labels, all_preds)
+    cm = confusion_matrix(all_labels, all_preds, labels=labels)
+    label_names = [idx2phases[i] for i in labels]
     cm_df = pd.DataFrame(cm, index=label_names, columns=label_names)
 
     plt.figure(figsize=(10, 8))
@@ -74,36 +92,55 @@ def evaluate_model(model, val_loader, device, label_names, output_dir):
     return cm_path, report_path
 
 
+@profile
 def train(cfg):
-    output_dir = "outputs/segment_classification"
+    output_dir = "outputs/phase_classification"
     os.makedirs(output_dir, exist_ok=True)
 
     print("Loading datasets...")
     dataset = load_datasets(cfg)
 
+    print("Filtering datasets...")
+    dataset = filter_dataset_by_labels(dataset, cfg["include_labels"])
+
     print("Splitting datasets...")
-    train_set, val_set = split_dataset_by_video(dataset, cfg.get("val_split", 0.2))
+    train_set, val_set = split_dataset_by_video(dataset, cfg.get("val_split"))
+
+    num_classes = 0
+    for i, ds in enumerate(dataset.datasets):
+        if isinstance(ds, Subset):
+            labels = get_labels_from_subset(ds)
+        else:
+            labels = ds.get_labels()
+        num_classes = max(num_classes, len(labels))
+
+    print(f"Number of classes: {num_classes}")
 
     print("Loading data loaders...")
+
+    pin_memory = cfg["device"] == "cuda"
+
+    collate_fn = select_collate(cfg["model"], cfg.get("num_frames", 200))
+
     train_loader = DataLoader(
         train_set,
         batch_size=cfg["batch_size"],
         shuffle=True,
-        collate_fn=segment_collate,
+        collate_fn=collate_fn,
+        num_workers=2,
+        pin_memory=pin_memory,
     )
     val_loader = DataLoader(
         val_set,
         batch_size=cfg["batch_size"],
         shuffle=False,
-        collate_fn=segment_collate,
+        collate_fn=collate_fn,
+        num_workers=2,
+        pin_memory=pin_memory,
     )
 
-    num_classes = len(dataset.datasets[0].get_labels())
-
-    print(f"Number of classes: {num_classes}")
-
     print("Loading model...")
-    model = CNNLSTM(num_classes=num_classes)
+    model = get_model(cfg["model"], num_classes=num_classes)
     model = model.to(cfg["device"])
 
     print("Loading optimizer...")
@@ -120,21 +157,34 @@ def train(cfg):
             f"[bold yellow]Starting epoch {epoch + 1} of {cfg['num_epochs']}[/bold yellow]"
         )
         model.train()
-        for i, (x, y, lengths) in enumerate(train_loader):
-            print(f"Training batch {i}: {x.shape}, {y.shape}, {lengths}")
+        for i, batch in enumerate(train_loader):
+            # print(f"Training batch {i}: {x.shape}, {y.shape}, {lengths}")
+            if cfg["model"] == "cnn_lstm":
+                x, y, lengths = batch
+            else:
+                x, y = batch
+                lengths = None
+            start = time.time()
             x, y = x.to(cfg["device"]), y.to(cfg["device"])
             optimizer.zero_grad()
             logits = model(x, lengths)
             loss = criterion(logits, y)
             loss.backward()
             optimizer.step()
+            end = time.time()
+            print(f"Batch {i} took {end - start:.2f}s")
 
         print("[bold yellow]Validating...[/bold yellow]")
         model.eval()
         correct, total = 0, 0
         with torch.no_grad():
-            for i, (x, y, lengths) in enumerate(val_loader):
-                print(f"Validating batch {i}: {x.shape}, {y.shape}, {lengths}")
+            for i, batch in enumerate(val_loader):
+                # print(f"Validating batch {i}: {x.shape}, {y.shape}, {lengths}")
+                if cfg["model"] == "cnn_lstm":
+                    x, y, lengths = batch
+                else:
+                    x, y = batch
+                    lengths = None
                 x, y = x.to(cfg["device"]), y.to(cfg["device"])
                 logits = model(x, lengths)
                 preds = torch.argmax(logits, dim=1)
@@ -157,10 +207,7 @@ def train(cfg):
 
     print("Evaluating best model...")
     model.load_state_dict(torch.load(os.path.join(output_dir, "models/best.pt")))
-    label_names = dataset.datasets[0].get_labels()
-    cm_path, report_path = evaluate_model(
-        model, val_loader, cfg["device"], label_names, output_dir
-    )
+    cm_path, report_path = evaluate_model(model, val_loader, output_dir, cfg)
 
     print(f"Best model saved to {os.path.join(output_dir, 'models/best.pt')}")
     print(f"Confusion matrix saved to {cm_path}")

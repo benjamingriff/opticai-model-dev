@@ -1,12 +1,12 @@
 import os
 import csv
 from collections import defaultdict
-from datasets.base.frame_segment import BaseFrameSegmentDataset
+from datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
 from labels.mappings.cataract101 import normalise_phase
 
 
-class Cataract101Dataset(BaseFrameSegmentDataset):
-    def __init__(self, data_root, mode="frame", transform=None):
+class Cataract101Dataset(BaseFrameSegmentSequenceDataset):
+    def __init__(self, data_root, mode, transform=None):
         super().__init__(data_root, mode=mode, transform=transform)
         self.video_dir = os.path.join(self.data_root, "videos")
         self.annotation_path = os.path.join(self.data_root, "annotations.csv")
@@ -68,10 +68,13 @@ class Cataract101Dataset(BaseFrameSegmentDataset):
                 last_label = labels[-1][1]
                 max_frame = int(self.video_info[video_id]["Frames"])
                 samples.append((video_path, last_start_frame, max_frame, last_label))
-                from rich import print
 
-                print(labels)
-                print(samples)
+            elif self.mode == "sequence":
+                frame_list = [frame for frame, _ in labels]
+                label_list = [phase for _, phase in labels]
+                samples.append((video_path, frame_list, label_list))
                 breakpoint()
+
+                # This needs to change because the data is nott correct. It needs to be more like == "frame"....
 
         return samples

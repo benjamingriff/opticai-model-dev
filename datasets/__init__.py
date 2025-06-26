@@ -1,9 +1,11 @@
-from datasets.cataract21 import Cataract21Dataset
-from datasets.cataract101 import Cataract101Dataset
+from datasets.raw.cataract21 import Cataract21Dataset
+from datasets.raw.cataract101 import Cataract101Dataset
+from datasets.infer.cataract21 import Cataract21InferenceDataset
 
 DATASET_REGISTRY = {
     "cataract-21": Cataract21Dataset,
     "cataract-101": Cataract101Dataset,
+    "cataract-21-infer": Cataract21InferenceDataset,
 }
 
 

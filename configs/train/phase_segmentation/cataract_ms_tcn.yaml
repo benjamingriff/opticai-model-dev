@@ -1,0 +1,22 @@
+task: phase_segmentation
+
+datasets:
+  - cataract-21
+  # - cataract-101
+
+data_path: ${DATA_PATH}
+val_split: 0.2
+
+downsample_stride: 4
+
+model: ms_tcn
+
+tcn:
+  num_stages: 4
+  num_layers: 10
+  num_filters: 64
+
+batch_size: 1
+num_epochs: 20
+
+device: mps

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from string import Template
 import importlib
 
+
 load_dotenv()
 
 
@@ -18,14 +19,15 @@ def load_config(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, required=True)
+    parser.add_argument("--video", type=str, required=True)
     args = parser.parse_args()
 
     cfg = load_config(args.config)
 
     task = cfg["task"]
-    module = importlib.import_module(f"tasks.train.{task}.train")
-    run_fn = getattr(module, "train")
-    run_fn(cfg)
+    module = importlib.import_module(f"tasks.infer.{task}.infer")
+    run_fn = getattr(module, "infer")
+    run_fn(cfg, args.video)
 
 
 if __name__ == "__main__":

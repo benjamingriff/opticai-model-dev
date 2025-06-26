@@ -1,0 +1,11 @@
+task: phase_segmentation
+
+datasets:
+  - cataract-21
+
+data_path: ${DATA_PATH}
+
+downsample_stride: 4
+batch_size: 1
+
+device: mps

@@ -1,0 +1,25 @@
+task: phase_classification
+
+datasets:
+  - cataract-21
+  - cataract-101
+data_path: ${DATA_PATH}
+val_split: 0.2
+
+include_labels:
+  - "Incision"
+  - "Viscous agent injection"
+  - "Rhexis"
+  - "Hydrodissection"
+  - "Phacoemulsification"
+  - "Irrigation and aspiration"
+  - "Capsule polishing"
+  - "Lens implant setting-up"
+  - "Viscous agent removal"
+  - "Tonifying and antibiotics"
+
+model: cnn_tcn
+batch_size: 8
+num_epochs: 5 
+
+device: mps
