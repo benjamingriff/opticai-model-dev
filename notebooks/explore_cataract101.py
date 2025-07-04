@@ -1,9 +1,9 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(".."))
+# sys.path.append(os.path.abspath(".."))
 
-from datasets import get_dataset
+from _datasets import get_dataset
 from dotenv import load_dotenv
 from rich import print
 from torchvision import transforms

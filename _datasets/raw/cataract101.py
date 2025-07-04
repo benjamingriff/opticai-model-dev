@@ -1,7 +1,7 @@
 import os
 import csv
 from collections import defaultdict
-from datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
+from _datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
 from labels.mappings.cataract101 import normalise_phase
 
 

@@ -1,6 +1,6 @@
 import os
 import csv
-from datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
+from _datasets.raw.base.frame_segment_sequence import BaseFrameSegmentSequenceDataset
 from labels.mappings.cataract21 import normalise_phase
 
 

@@ -1,10 +1,12 @@
-task: phase_segmentation
-
-datasets:
-  - cataract-21
-  # - cataract-101
-
 data_path: ${DATA_PATH}
+
+task: phase_segmentation
+scope: all
+datasets:
+  - cataract-101
+  - cataract-21
+
+
 val_split: 0.2
 
 downsample_stride: 4

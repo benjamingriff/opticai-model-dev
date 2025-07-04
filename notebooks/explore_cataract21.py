@@ -1,7 +1,7 @@
 import sys
 import os
 
-# sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath(".."))
 
 from datasets import get_dataset
 from dotenv import load_dotenv
@@ -13,33 +13,44 @@ load_dotenv()
 data_path = os.getenv("DATA_PATH")
 
 dataset_name = "cataract-21"
+task = "phase_segmentation"
+scope = "all"
 
-DatasetClass = get_dataset(dataset_name)
-dataset = DatasetClass(
-    data_root=os.path.join(data_path, dataset_name),
-    mode="segment",
-)
-
-print(dataset.data_root)
-print(dataset.mode)
-print(dataset.transform)
-print(dataset.samples[:10])
-print(len(dataset))
-print(dataset.get_labels())
-
-tensor, label = dataset[0]
-print(tensor.shape)
-print(label)
+dataset_path = os.path.expanduser(os.path.join(data_path, dataset_name))
 
 transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
 
-DatasetClass = get_dataset(dataset_name)
+DatasetClass = get_dataset(dataset_name, task, scope)
 dataset = DatasetClass(
-    data_root=os.path.join(data_path, dataset_name),
-    mode="segment",
+    data_root=dataset_path,
     transform=transform,
 )
+
+print(dataset.data_root)
+print(dataset.transform)
+print(dataset.samples[0])
+print(len(dataset))
 
 tensor, label = dataset[0]
 print(tensor.shape)
 print(label)
+
+
+dataset_name = "cataract-21"
+task = "phase_segmentation"
+scope = "single"
+
+video_path = os.path.join(dataset_path, "training/case_10.mp4")
+
+transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
+
+DatasetClass = get_dataset(dataset_name, task, scope)
+dataset = DatasetClass(
+    video_path=video_path,
+    transform=transform,
+)
+
+print(dataset.video_path)
+print(dataset.transform)
+print(dataset.samples)
+print(len(dataset))

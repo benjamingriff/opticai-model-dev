@@ -17,7 +17,7 @@ def run(cfg):
     )
 
     dataset_name = cfg["dataset"]
-    DatasetClass = get_dataset(dataset_name)
+    DatasetClass = get_dataset(dataset_name, cfg["task"], cfg["scope"])
     dataset = DatasetClass(
         data_root=os.path.join(cfg["data_path"], dataset_name),
         mode=cfg["mode"],

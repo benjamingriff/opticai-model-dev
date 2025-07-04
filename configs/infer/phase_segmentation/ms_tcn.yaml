@@ -1,4 +1,9 @@
 task: phase_segmentation
+scope: single
+
+dataset: cataract-21
+
+video_path: ~/.opticai-data/cataract-21/training/case_10.mp4
 
 model: ms_tcn
 

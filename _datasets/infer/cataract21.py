@@ -1,4 +1,4 @@
-from datasets.infer.base.infer import BaseInferenceDataset
+from _datasets.infer.base.infer import BaseInferenceDataset
 
 
 class Cataract21InferenceDataset(BaseInferenceDataset):

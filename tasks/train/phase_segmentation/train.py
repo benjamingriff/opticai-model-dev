@@ -20,13 +20,13 @@ def get_transform():
 def load_datasets(cfg):
     datasets = []
     for dataset_name in cfg["datasets"]:
-        DatasetClass = get_dataset(dataset_name)
+        DatasetClass = get_dataset(dataset_name, cfg["task"], cfg["scope"])
         dataset = DatasetClass(
-            data_root=os.path.join(cfg["data_path"], dataset_name),
-            mode="sequence",
+            data_root=os.path.expanduser(os.path.join(cfg["data_path"], dataset_name)),
             transform=get_transform(),
         )
         datasets.append(dataset)
+        print(f"{dataset_name} loaded")
     return ConcatDataset(datasets)
 
 

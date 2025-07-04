@@ -1,5 +1,5 @@
 import os
-from datasets.features.base.features import BaseFeatureSequenceDataset
+from _datasets.features.base.features import BaseFeatureSequenceDataset
 
 
 class Cataract21FeatureDataset(BaseFeatureSequenceDataset):

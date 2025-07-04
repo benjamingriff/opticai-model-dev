@@ -2,7 +2,7 @@ import os
 import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader, ConcatDataset
-from datasets import get_dataset
+from _datasets import get_dataset
 from torchvision.models import resnet18, ResNet18_Weights
 from .utils.filter import downsample_sequences
 

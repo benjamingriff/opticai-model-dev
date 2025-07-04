@@ -3,10 +3,10 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from datasets.infer.cataract21 import Cataract21InferenceDataset
+from datasets import get_dataset
 from models import get_model
 from labels.phases import idx2phase, PHASES
-from .utils.filter import downsample_inference_dataset
+from .utils.filter import downsample_sequences
 from rich import print
 
 
@@ -17,16 +17,24 @@ def get_transform():
 def infer(cfg, video_path):
     print("Starting inference...")
 
-    output_dir = "outputs/infer/phase_segmentation"
+    output_dir = f"outputs/infer/{cfg['task']}"
     os.makedirs(output_dir, exist_ok=True)
 
-    dataset = Cataract21InferenceDataset(video_path, transform=get_transform())
-    dataset = downsample_inference_dataset(dataset, stride=cfg["downsample_stride"])
+    print("Initialising dataset...")
+    dataset = get_dataset(cfg["dataset"], cfg["task"], cfg["scope"])(
+        video_path=video_path, transform=get_transform()
+    )
+
+    print("Downsampling dataset...")
+    dataset = downsample_sequences(dataset, stride=cfg["downsample_stride"])
+
+    print("Initialising dataloader...")
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     num_classes = len(PHASES)
     print(f"Number of classes: {num_classes}")
 
+    print("Initialising model...")
     model = get_model(
         cfg["model"], num_classes=num_classes, precomputed_features=False, **cfg["tcn"]
     )
@@ -36,19 +44,25 @@ def infer(cfg, video_path):
     model.eval()
     print(f"Loaded model from [green]{model_path}[/green]")
 
-    video_tensor, frame_indices = next(iter(dataloader))  # each is (1, T, ...)
-    video_tensor = video_tensor.to(cfg["device"])  # already (1, T, C, H, W)
-    frame_indices = frame_indices.squeeze(0)  # (T,)
+    print("Running inference...")
+    video_tensor, label_list = next(
+        iter(dataloader)
+    )  # What should I do if the dataloader has multiple datasets / samples?
+    video_tensor = video_tensor.to(cfg["device"])
 
     with torch.no_grad():
-        outputs = model(video_tensor)  # (1, num_classes, T)
+        outputs = model(video_tensor)
         final_output = outputs[-1]
         preds = torch.argmax(final_output, dim=1).squeeze(0)
         print("[bold green]Finished inference![/bold green]")
 
+    print("Saving predictions...")
     frame2phase = {
-        str(idx.item()): idx2phase[pred.item()]
-        for idx, pred in zip(frame_indices, preds)
+        str(idx): {
+            "pred": idx2phase[pred.item()],
+            "label": label_list[idx] if label_list is not None else None,
+        }
+        for idx, pred in enumerate(preds)
     }
 
     output_path = os.path.join(output_dir, f"{os.path.basename(video_path)}.json")
