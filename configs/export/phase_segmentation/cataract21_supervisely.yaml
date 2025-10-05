@@ -1,0 +1,9 @@
+data_path: ${DATA_PATH}/raw
+
+task: phase_segmentation
+scope: all
+dataset: cataract-21
+
+backend: supervisely
+output_dir: outputs/supervisely_export
+predictions_dir: outputs/infer/phase_segmentation

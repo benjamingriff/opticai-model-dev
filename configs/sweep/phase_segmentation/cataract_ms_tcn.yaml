@@ -1,0 +1,40 @@
+data_path: ${DATA_PATH}
+
+task: phase_segmentation
+scope: all
+datasets:
+  - cataract-101
+  - cataract-21
+
+val_split: 0.2
+
+downsample_stride: 6
+
+model: ms_tcn
+
+sweep:
+  - name: baseline
+    tcn:
+      num_stages: 4
+      num_layers: 10
+      num_filters: 64
+    learning_rate: 1e-4
+
+  - name: shallow_wide
+    tcn:
+      num_stages: 4
+      num_layers: 8
+      num_filters: 128
+    learning_rate: 5e-4
+
+  - name: deep_narrow
+    tcn:
+      num_stages: 4
+      num_layers: 12
+      num_filters: 32
+    learning_rate: 1e-4
+
+batch_size: 1
+num_epochs: 20
+
+device: mps

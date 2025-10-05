@@ -9,7 +9,7 @@ datasets:
 
 val_split: 0.2
 
-downsample_stride: 4
+downsample_stride: 6
 
 model: ms_tcn
 
